@@ -1,0 +1,138 @@
+[
+  {
+    "career": "Data Analyst",
+    "description": "A Data Analyst collects, cleans, analyzes, and visualizes data to help organizations make informed decisions.",
+    "education": [
+      "Bachelor's degree in Computer Science",
+      "Bachelor's degree in Statistics",
+      "Bachelor's degree in Mathematics",
+      "Bachelor's degree in Commerce or Business with relevant analytical skills"
+    ],
+    "skills": [
+      "Excel",
+      "SQL",
+      "Python",
+      "Statistics",
+      "Data Visualization",
+      "Power BI"
+    ],
+    "soft_skills": [
+      "Analytical thinking",
+      "Communication",
+      "Problem solving",
+      "Attention to detail"
+    ],
+    "courses": [
+      "SQL fundamentals",
+      "Python for data analysis",
+      "Statistics",
+      "Power BI",
+      "Excel for data analysis"
+    ],
+    "certifications": [
+      "Microsoft Power BI certification",
+      "Google Data Analytics certification"
+    ],
+    "entry_level_roles": [
+      "Junior Data Analyst",
+      "Business Intelligence Analyst",
+      "Reporting Analyst"
+    ],
+    "career_progression": [
+      "Data Analyst",
+      "Senior Data Analyst",
+      "Analytics Lead",
+      "Data Science or Business Intelligence roles"
+    ]
+  },
+  {
+    "career": "Software Developer",
+    "description": "A Software Developer designs, builds, tests, and maintains software applications and systems.",
+    "education": [
+      "Bachelor's degree in Computer Science",
+      "Bachelor's degree in Information Technology",
+      "Relevant technical education with strong programming skills"
+    ],
+    "skills": [
+      "Programming",
+      "Data Structures",
+      "Algorithms",
+      "Git",
+      "Databases",
+      "Software Development"
+    ],
+    "soft_skills": [
+      "Problem solving",
+      "Teamwork",
+      "Communication",
+      "Logical thinking"
+    ],
+    "courses": [
+      "Programming fundamentals",
+      "Data Structures and Algorithms",
+      "Web development",
+      "Database systems",
+      "Software engineering"
+    ],
+    "certifications": [
+      "Cloud development certification",
+      "Professional software development certifications"
+    ],
+    "entry_level_roles": [
+      "Junior Software Developer",
+      "Software Engineer",
+      "Web Developer"
+    ],
+    "career_progression": [
+      "Software Developer",
+      "Senior Software Developer",
+      "Technical Lead",
+      "Software Architect"
+    ]
+  },
+  {
+    "career": "Cybersecurity Analyst",
+    "description": "A Cybersecurity Analyst monitors systems, identifies security threats, investigates incidents, and helps protect organizational information systems.",
+    "education": [
+      "Bachelor's degree in Cybersecurity",
+      "Bachelor's degree in Computer Science",
+      "Bachelor's degree in Information Technology"
+    ],
+    "skills": [
+      "Networking",
+      "Operating Systems",
+      "Cybersecurity fundamentals",
+      "Threat detection",
+      "Security monitoring",
+      "Linux"
+    ],
+    "soft_skills": [
+      "Problem solving",
+      "Attention to detail",
+      "Critical thinking",
+      "Communication"
+    ],
+    "courses": [
+      "Computer networking",
+      "Linux fundamentals",
+      "Cybersecurity fundamentals",
+      "Network security",
+      "Security operations"
+    ],
+    "certifications": [
+      "CompTIA Security+",
+      "Certified SOC Analyst"
+    ],
+    "entry_level_roles": [
+      "Junior Cybersecurity Analyst",
+      "SOC Analyst",
+      "Security Operations Analyst"
+    ],
+    "career_progression": [
+      "Cybersecurity Analyst",
+      "Senior Security Analyst",
+      "Security Engineer",
+      "Security Architect"
+    ]
+  }
+]
