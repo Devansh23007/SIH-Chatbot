@@ -61,11 +61,14 @@ def load_careers():
 # Load stored embeddings
 # --------------------------------------------------
 
-def load_embeddings():
-    """Load previously generated career embeddings."""
+_EMBEDDINGS_CACHE = None
 
-    with open(EMBEDDINGS_PATH, "r", encoding="utf-8") as file:
-        return json.load(file)
+def load_embeddings():
+    global _EMBEDDINGS_CACHE
+    if _EMBEDDINGS_CACHE is None:
+        with open(EMBEDDINGS_PATH, "r", encoding="utf-8") as file:
+            _EMBEDDINGS_CACHE = json.load(file)
+    return _EMBEDDINGS_CACHE
 
 
 # --------------------------------------------------
