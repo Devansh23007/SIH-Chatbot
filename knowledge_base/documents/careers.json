@@ -134,5 +134,208 @@
       "Security Engineer",
       "Security Architect"
     ]
+  },
+  {
+    "career": "Data Scientist",
+    "description": "Data Scientists analyze complex, large-scale data to extract actionable insights and build predictive models for strategic decision-making. In India's tech ecosystem, they combine computer science, statistics, and business domain knowledge to solve problems across e-commerce, fintech, and healthcare. The work involves gathering and cleaning raw data, training machine learning algorithms, and presenting data-driven stories to business stakeholders.",
+    "education": [
+      "B.Tech / B.E. in Computer Science, Data Science, or AI (via JEE Main/Advanced or State CETs)",
+      "B.Sc in Statistics, Mathematics, or Computer Science followed by an M.Sc",
+      "BCA followed by an MCA specializing in Data Analytics",
+      "Integrated M.Tech or M.Sc in Data Science from top institutes like IITs, NITs, or ISI"
+    ],
+    "skills": [
+      "Python and R Programming",
+      "SQL and NoSQL Databases",
+      "Machine Learning & Deep Learning Algorithms",
+      "Applied Probability and Statistics",
+      "Data Visualization (Power BI, Tableau, Matplotlib)",
+      "Big Data Tools (Apache Spark, Hadoop)",
+      "Data Wrangling and Preprocessing"
+    ],
+    "soft_skills": [
+      "Data Storytelling",
+      "Analytical Problem-Solving",
+      "Business Acumen",
+      "Cross-Functional Communication",
+      "Critical Thinking"
+    ],
+    "courses": [
+      "Probability and Inferential Statistics",
+      "Linear Algebra and Multivariable Calculus",
+      "Data Structures and Algorithms",
+      "Machine Learning and Pattern Recognition",
+      "Database Management Systems (DBMS)"
+    ],
+    "certifications": [
+      "AWS Certified Machine Learning - Specialty",
+      "Microsoft Certified: Azure Data Scientist Associate",
+      "TensorFlow Developer Certificate"
+    ],
+    "entry_level_roles": [
+      "Junior Data Scientist",
+      "Data Analyst",
+      "Associate ML Engineer",
+      "Business Intelligence Analyst"
+    ],
+    "career_progression": [
+      "Data Analyst / Junior Data Scientist",
+      "Data Scientist",
+      "Senior Data Scientist",
+      "Lead Data Scientist",
+      "Principal Data Scientist / VP of Data Analytics"
+    ]
+  },
+  {
+    "career": "Machine Learning Engineer",
+    "description": "Machine Learning Engineers design, build, and deploy predictive models and artificial intelligence algorithms into production systems. They bridge the gap between data science and software engineering by transforming raw data into scalable AI solutions. In India, they work extensively across tech product companies, IT services, fintech, and e-commerce sectors.",
+    "education": [
+      "B.Tech / B.E. in Computer Science, AI & ML, or Data Science",
+      "B.Sc in Computer Science, Statistics, or Mathematics followed by MCA or M.Sc",
+      "M.Tech in Computer Science, Data Science, or Artificial Intelligence"
+    ],
+    "skills": [
+      "Python",
+      "TensorFlow / PyTorch",
+      "Scikit-Learn",
+      "Data Structures & Algorithms",
+      "SQL and NoSQL Databases",
+      "MLOps and Docker",
+      "Linear Algebra & Calculus"
+    ],
+    "soft_skills": [
+      "Analytical Problem Solving",
+      "Critical Thinking",
+      "Cross-functional Collaboration",
+      "Business Acumen",
+      "Adaptability"
+    ],
+    "courses": [
+      "Linear Algebra and Statistics",
+      "Data Structures and Algorithms",
+      "Machine Learning & Deep Learning Specialization",
+      "Database Management Systems",
+      "Cloud Computing and MLOps"
+    ],
+    "certifications": [
+      "AWS Certified Machine Learning - Specialty",
+      "Google Cloud Professional Machine Learning Engineer",
+      "TensorFlow Developer Certificate",
+      "Microsoft Certified: Azure AI Engineer Associate"
+    ],
+    "entry_level_roles": [
+      "Junior Machine Learning Engineer",
+      "Associate AI Engineer",
+      "Data Science Analyst",
+      "Software Engineer - ML Track"
+    ],
+    "career_progression": [
+      "Junior Machine Learning Engineer",
+      "Machine Learning Engineer",
+      "Senior Machine Learning Engineer",
+      "Lead ML Engineer / MLOps Architect",
+      "Principal AI Scientist / Head of AI"
+    ]
+  },
+  {
+    "career": "Artificial Intelligence Engineer",
+    "description": "An Artificial Intelligence Engineer designs, develops, and deploys machine learning models and AI systems to solve complex business problems. The role involves working with large datasets, building neural networks, and integrating intelligent software into production environments. In India, AI Engineers work across diverse sectors including IT services, fintech, healthcare, and global capability centers (GCCs).",
+    "education": [
+      "B.Tech/B.E. in Computer Science, Artificial Intelligence, or Data Science",
+      "B.C.A / B.Sc in Computer Science followed by an M.C.A or M.Sc in Data Science/AI",
+      "M.Tech in Artificial Intelligence, Machine Learning, or Computer Science"
+    ],
+    "skills": [
+      "Python programming",
+      "Machine Learning algorithms",
+      "Deep Learning frameworks (TensorFlow, PyTorch)",
+      "Natural Language Processing (NLP)",
+      "Data Structures and Algorithms",
+      "SQL and NoSQL Databases",
+      "Cloud Platforms (AWS/Azure/GCP)"
+    ],
+    "soft_skills": [
+      "Problem-solving",
+      "Analytical thinking",
+      "Effective communication",
+      "Adaptability",
+      "Collaborative teamwork"
+    ],
+    "courses": [
+      "Linear Algebra and Probability",
+      "Data Structures and Algorithms",
+      "Machine Learning Specialization",
+      "Deep Learning and Neural Networks",
+      "Computer Vision"
+    ],
+    "certifications": [
+      "AWS Certified Machine Learning - Specialty",
+      "TensorFlow Developer Certificate",
+      "Microsoft Certified: Azure AI Engineer Associate"
+    ],
+    "entry_level_roles": [
+      "Junior AI Engineer",
+      "Machine Learning Associate",
+      "Data Science Trainee",
+      "Software Development Engineer - AI/ML"
+    ],
+    "career_progression": [
+      "Junior AI Engineer",
+      "AI Engineer",
+      "Senior AI Engineer",
+      "Lead AI Specialist / Machine Learning Architect",
+      "Principal AI Scientist / Head of AI"
+    ]
+  },
+  {
+    "career": "Data Engineer",
+    "description": "Data Engineers design, build, and maintain the infrastructure and pipelines required to collect, store, and process large volumes of data. They transform raw, unstructured data into clean formats that data scientists and business analysts can easily query and analyze. In India's growing tech and startup ecosystem, they are crucial for enabling data-driven decision-making at scale.",
+    "education": [
+      "B.Tech / B.E. in Computer Science, Information Technology, or Artificial Intelligence & Data Science",
+      "BCA followed by MCA with specialization in Data Analytics or Computer Science",
+      "B.Sc / M.Sc in Computer Science, Statistics, or Applied Mathematics"
+    ],
+    "skills": [
+      "SQL and Advanced Database Querying",
+      "Python or Scala Programming",
+      "Apache Spark and Distributed Computing",
+      "Data Warehousing (Snowflake, BigQuery, Amazon Redshift)",
+      "ETL/ELT Pipeline Orchestration (Apache Airflow)",
+      "Cloud Platforms (AWS, GCP, or Azure)",
+      "NoSQL Databases (MongoDB, Cassandra)"
+    ],
+    "soft_skills": [
+      "Analytical Problem-Solving",
+      "Attention to Detail",
+      "Cross-Functional Collaboration",
+      "Adaptability to New Technologies",
+      "Technical Communication"
+    ],
+    "courses": [
+      "Database Management Systems (DBMS)",
+      "Data Structures and Algorithms",
+      "Cloud Computing Foundations",
+      "Big Data Architecture",
+      "Data Engineering on Cloud Platforms"
+    ],
+    "certifications": [
+      "AWS Certified Data Engineer – Associate",
+      "Google Cloud Certified Professional Data Engineer",
+      "Microsoft Certified: Azure Data Engineer Associate",
+      "Databricks Certified Data Engineer Associate"
+    ],
+    "entry_level_roles": [
+      "Junior Data Engineer",
+      "Data Pipeline Engineer Trainee",
+      "Associate Software Engineer (Data Track)",
+      "ETL Developer"
+    ],
+    "career_progression": [
+      "Junior Data Engineer",
+      "Data Engineer",
+      "Senior Data Engineer",
+      "Lead Data Engineer / Data Architect",
+      "Principal Data Engineer / Head of Data Engineering"
+    ]
   }
 ]
