@@ -135,6 +135,7 @@ FORMAT (Markdown):
 3. The optional "Also useful:" bullets (max 2).
 4. One short follow-up question offering something closely related.
 
+Use ONLY bold text and "-" bullet lists. No headings (#), tables, or italics.
 Do not claim this is a scientifically validated career assessment.
 """
 
@@ -191,6 +192,7 @@ RULES:
 - If you are unsure about something, say so instead of guessing.
 - Markdown: one short sentence, then at most 3 bold section titles with at
   most 3 short bullets each. End with one short follow-up question.
+- Use ONLY bold text and "-" bullet lists. No headings (#), tables, or italics.
 - Do NOT add any disclaimer yourself; the app adds it.
 """
 

@@ -12,9 +12,9 @@ import re
 
 
 EXAMPLES = (
-    "- *What certifications do I need to become a Data Engineer?*\n"
-    "- *How do I become a pilot?*\n"
-    "- *What skills does a graphic designer need?*"
+    "- What certifications do I need to become a Data Engineer?\n"
+    "- How do I become a pilot?\n"
+    "- What skills does a graphic designer need?"
 )
 
 GREETING = (

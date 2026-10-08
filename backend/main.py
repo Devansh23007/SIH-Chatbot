@@ -41,13 +41,13 @@ PROJECT_ROOT = Path(__file__).resolve().parent.parent
 MISSING_LOG = PROJECT_ROOT / "knowledge_base" / "missing_queries.jsonl"
 
 GENERAL_NOTICE = (
-    "ℹ️ *This isn't in my verified career database yet, so this is general "
-    "guidance only. Please double-check details with official sources.*\n\n"
+    "ℹ️ **Note:** This isn't in my verified career database yet, so this is "
+    "general guidance only. Please double-check details with official sources.\n\n"
 )
 
 CLOSEST_NOTICE = (
-    "ℹ️ *I don't have an exact match for that, so here is the closest "
-    "career in my database: **{career}**.*\n\n"
+    "ℹ️ I don't have an exact match for that, so here is the closest "
+    "career in my database: **{career}**.\n\n"
 )
 
 
