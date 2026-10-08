@@ -90,20 +90,24 @@ def generate_response(message: str) -> str:
 
 def generate_career_response(
     question: str,
-    retrieved_context: str
+    retrieved_context: str,
+    similar_careers: str = ""
 ) -> str:
     """
-    Short, chat-friendly career answer.
-    retrieved_context may contain several careers; the FIRST is the best match.
+    Focused, chat-friendly career answer.
+    retrieved_context = the ONE matched career.
+    similar_careers   = names only, of 1-2 neighbouring careers.
     """
 
     prompt = f"""
 You are a friendly AI Career Counselor for Indian students, replying in a chat window.
 
-CAREER KNOWLEDGE (best match first):
+CAREER KNOWLEDGE (the matched career):
 -----------------
 {retrieved_context}
 -----------------
+
+OTHER SIMILAR CAREERS (names only): {similar_careers or "none"}
 
 STUDENT QUESTION:
 {question}
@@ -112,23 +116,52 @@ RULES:
 - Use ONLY the career knowledge above. Do NOT add certifications, courses,
   salaries, exam fees, or companies that are not in it. If the knowledge does
   not cover something the student asked, say so briefly.
-- Focus on the FIRST career. Mention another career only if the student is
-  exploring options or the question clearly fits it better.
-- Keep the whole answer under 170 words. Students will not read long text.
-- Answer ONLY what was asked. If they ask for courses and certifications,
-  show just those sections, not education, skills, or progression.
+- Answer ONLY the specific thing asked.
+  * If the student asks about ONE aspect (certifications, courses, skills,
+    education, entry-level roles, career growth), give ONLY that aspect.
+    Do not add the other sections.
+  * Only if the question is general ("tell me about X", "how do I become X")
+    give a short overview with at most 3 small sections.
+- After the main answer you may add at most 2 bullets under the bold title
+  "Also useful:", and only if they are DIRECTLY connected to what was asked
+  (for example, for certifications: a course that prepares for them).
+  Never add unrelated information.
+- Mention similar careers only if the student is comparing or exploring options.
+- Length: under 120 words for a specific question, under 170 for an overview.
 
 FORMAT (Markdown):
 1. One short, warm sentence that directly answers the question.
-2. Bold section titles, each with at most 4 bullets. Every bullet under 12 words.
-3. A final line starting with "Next step:" giving ONE concrete action.
-4. One short follow-up question offering more help
-   (e.g. a learning roadmap, entry-level roles, or comparing with a similar career).
+2. The answer as a bold title with at most 4 bullets, each under 12 words.
+3. The optional "Also useful:" bullets (max 2).
+4. One short follow-up question offering something closely related.
 
 Do not claim this is a scientifically validated career assessment.
 """
 
     return _generate(prompt)
+
+
+def classify_question(question: str):
+    """
+    Returns "career", "other", or None if the AI could not be reached.
+    Used only when retrieval finds no good match.
+    """
+
+    prompt = f"""
+Is this message from a student about careers, jobs, professions, studies,
+courses, exams, skills, or choosing a career path?
+
+Message: "{question}"
+
+Reply with exactly one word: CAREER or OTHER.
+"""
+
+    answer = _generate(prompt)
+
+    if answer == FRIENDLY_ERROR:
+        return None
+
+    return "career" if "CAREER" in answer.upper() else "other"
 
 
 def generate_general_response(question: str, nearby_careers: str = "") -> str:

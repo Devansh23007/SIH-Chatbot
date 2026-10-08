@@ -12,9 +12,11 @@ from services.llm_service import (
     generate_response,
     generate_career_response,
     generate_general_response,
+    classify_question,
 )
 
 from services.rag_service import search_careers
+from services.small_talk import small_talk_reply, OFF_TOPIC
 
 
 app = FastAPI(title="SIH Career Chatbot")
@@ -29,7 +31,7 @@ app.add_middleware(
 
 
 # --------------------------------------------------
-# Relevance thresholds  (CALIBRATE THESE - see calibrate_threshold.py)
+# Relevance thresholds (calibrate with calibrate_threshold.py)
 # --------------------------------------------------
 
 STRONG_MATCH = float(os.getenv("STRONG_MATCH", 0.70))   # confident: answer from KB
@@ -49,8 +51,12 @@ CLOSEST_NOTICE = (
 )
 
 
+# --------------------------------------------------
+# Helpers
+# --------------------------------------------------
+
 def log_missing(question: str, results: list):
-    """Remember questions the KB couldn't answer well, so you can add those careers."""
+    """Remember CAREER questions the KB couldn't answer well."""
     try:
         MISSING_LOG.parent.mkdir(parents=True, exist_ok=True)
         record = {
@@ -62,7 +68,6 @@ def log_missing(question: str, results: list):
             f.write(json.dumps(record, ensure_ascii=False) + "\n")
     except Exception as exc:
         print(f"[log] could not write missing log: {exc}")
-
 
 
 def promote_named_career(question: str, results: list):
@@ -78,9 +83,27 @@ def promote_named_career(question: str, results: list):
     return results, False
 
 
+def reply(text, source, results=None, career=None, similarity=None):
+    """Build a consistent API response."""
+    return {
+        "response": text,
+        "source": source,
+        "career": career,
+        "similarity": similarity,
+        "related_careers": [
+            {"career": r["career"], "similarity": round(r["similarity"], 3)}
+            for r in (results or [])
+        ],
+    }
+
+
 class ChatRequest(BaseModel):
     message: str
 
+
+# --------------------------------------------------
+# Routes
+# --------------------------------------------------
 
 @app.get("/")
 def root():
@@ -102,56 +125,63 @@ def chat(request: ChatRequest):
 @app.post("/api/career-chat")
 def career_chat(request: ChatRequest):
 
-    # 1) Retrieve the 3 closest careers
+    message = request.message.strip()
+
+    # 0) Empty message
+    if not message:
+        return reply("Please type a question and I'll be happy to help. 😊",
+                     "small_talk")
+
+    # 1) Greetings, "what are you", thanks, bye -> instant answer,
+    #    no API call, never logged
+    talk = small_talk_reply(message)
+    if talk:
+        return reply(talk, "small_talk")
+
+    # 2) Retrieve the 3 closest careers
     try:
-        results = search_careers(request.message, top_k=3)
+        results = search_careers(message, top_k=3)
     except Exception as exc:
         print(f"[rag] search failed: {type(exc).__name__}: {str(exc)[:120]}")
-        return {
-            "response": "Sorry, I couldn't search the career database right now. "
-                        "Please try again in a few seconds.",
-            "source": "error",
-            "career": None,
-            "similarity": None,
-            "related_careers": [],
-        }
+        return reply("Sorry, I couldn't search the career database right now. "
+                     "Please try again in a few seconds.", "error")
 
-    results, name_hit = promote_named_career(request.message, results)
+    results, name_hit = promote_named_career(message, results)
     top = results[0]
-    related = [
-        {"career": r["career"], "similarity": round(r["similarity"], 3)}
-        for r in results
-    ]
+    others = ", ".join(r["career"] for r in results[1:3])
 
     print("[rag] top matches:",
           [(r["career"], round(r["similarity"], 3)) for r in results])
 
-    # 2) Decide how good the match is
+    # 3a) Strong match (or career named): focused answer from the KB.
+    #     Only the matched career's text goes to the LLM, so it stays on topic.
     if name_hit or top["similarity"] >= STRONG_MATCH:
-        # Confident: answer from the knowledge base
-        context = "\n\n=====\n\n".join(r["text"] for r in results)
-        answer = generate_career_response(request.message, context)
-        source = "knowledge_base"
+        answer = generate_career_response(message, top["text"], others)
+        return reply(answer, "knowledge_base", results,
+                     career=top["career"], similarity=top["similarity"])
 
-    elif top["similarity"] >= WEAK_MATCH:
-        # Related career exists: answer from closest, but say so
-        log_missing(request.message, results)
-        context = "\n\n=====\n\n".join(r["text"] for r in results)
+    # 3b) Weak match: related career exists, say it's the closest one
+    if top["similarity"] >= WEAK_MATCH:
+        log_missing(message, results)
         answer = CLOSEST_NOTICE.format(career=top["career"]) + \
-            generate_career_response(request.message, context)
-        source = "knowledge_base_closest"
+            generate_career_response(message, top["text"], others)
+        return reply(answer, "knowledge_base_closest", results,
+                     career=top["career"], similarity=top["similarity"])
 
-    else:
-        # Not in the KB: general guidance, clearly labelled
-        log_missing(request.message, results)
-        nearby = ", ".join(r["career"] for r in results)
-        answer = GENERAL_NOTICE + generate_general_response(request.message, nearby)
-        source = "general"
+    # 3c) No good match: is it even a career question?
+    kind = classify_question(message)
 
-    return {
-        "response": answer,
-        "source": source,                 # "knowledge_base" | "knowledge_base_closest" | "general"
-        "career": top["career"] if source != "general" else None,
-        "similarity": top["similarity"],
-        "related_careers": related,
-    }
+    if kind is None:
+        # AI unreachable: don't guess, don't log
+        return reply("Sorry, I'm getting a lot of requests right now. "
+                     "Please try again in a few seconds.", "error")
+
+    if kind == "other":
+        # Not career related: friendly redirect, NOT logged as missing
+        return reply(OFF_TOPIC, "off_topic")
+
+    # Career question we don't have: general guidance + log it
+    log_missing(message, results)
+    nearby = ", ".join(r["career"] for r in results)
+    answer = GENERAL_NOTICE + generate_general_response(message, nearby)
+    return reply(answer, "general", results, similarity=top["similarity"])
