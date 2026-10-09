@@ -8,6 +8,7 @@ const noopUnsubscribe = () => () => undefined;
 
 /** Shape returned by the FastAPI endpoint POST /api/career-chat */
 interface CareerApiReply {
+  conversation_id: string | null;
   response: string;
   source: 'knowledge_base' | 'knowledge_base_closest' | 'general' | 'small_talk' | 'off_topic' | 'error';
   career: string | null;
@@ -49,7 +50,7 @@ export const careerTransport: ChatTransport = {
   async sendMessage(req: SendMessageRequest): Promise<ChatReply> {
     const data = await httpJson<CareerApiReply>(`${API_BASE}/api/career-chat`, {
       method: 'POST',
-      // conversation_id is ignored by the backend for now; it will carry chat memory later.
+      // conversation_id lets the backend remember the recent messages of this chat.
       body: { message: req.message, conversation_id: req.conversationId ?? null },
       timeoutMs: 45_000, // AI replies can take a few seconds, longer if a provider retries
     });
@@ -58,7 +59,8 @@ export const careerTransport: ChatTransport = {
     if (data.source === 'error') throw new ChatError('server');
 
     return {
-      conversationId: req.conversationId ?? createId(),
+      // The backend creates the id on the first message; keep using it for chat memory
+      conversationId: data.conversation_id ?? req.conversationId ?? createId(),
       content: data.response,
       suggestions: buildSuggestions(data, req.message),
       createdAt: new Date().toISOString(),

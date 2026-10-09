@@ -3,6 +3,7 @@ import os
 import re
 from datetime import datetime
 from pathlib import Path
+from typing import Optional
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
@@ -13,10 +14,12 @@ from services.llm_service import (
     generate_career_response,
     generate_general_response,
     classify_question,
+    rewrite_followup,
 )
 
-from services.rag_service import search_careers
+from services.rag_service import search_careers, load_embeddings
 from services.small_talk import small_talk_reply, OFF_TOPIC
+from services import memory
 
 
 app = FastAPI(title="SIH Career Chatbot")
@@ -83,9 +86,21 @@ def promote_named_career(question: str, results: list):
     return results, False
 
 
-def reply(text, source, results=None, career=None, similarity=None):
+def mentions_known_career(text: str) -> bool:
+    """True if the message literally names a career we have (so it is self-contained)."""
+    try:
+        names = [c["career"].lower() for c in load_embeddings()]
+    except Exception as exc:
+        print(f"[memory] could not load career names: {exc}")
+        return False
+    t = text.lower()
+    return any(re.search(rf"\b{re.escape(n)}\b", t) for n in names)
+
+
+def reply(text, source, results=None, career=None, similarity=None, cid=None):
     """Build a consistent API response."""
     return {
+        "conversation_id": cid,
         "response": text,
         "source": source,
         "career": career,
@@ -99,6 +114,7 @@ def reply(text, source, results=None, career=None, similarity=None):
 
 class ChatRequest(BaseModel):
     message: str
+    conversation_id: Optional[str] = None
 
 
 # --------------------------------------------------
@@ -127,61 +143,96 @@ def career_chat(request: ChatRequest):
 
     message = request.message.strip()
 
+    # The frontend sends no id on the first message, so we create one
+    cid = request.conversation_id or memory.new_id()
+
+    def respond(text, source, results=None, career=None, similarity=None,
+                remember_career=None):
+        """Save the exchange in memory, then build the API response."""
+        memory.remember(cid, message, text, career=remember_career)
+        return reply(text, source, results, career, similarity, cid=cid)
+
     # 0) Empty message
     if not message:
         return reply("Please type a question and I'll be happy to help. 😊",
-                     "small_talk")
+                     "small_talk", cid=cid)
 
     # 1) Greetings, "what are you", thanks, bye -> instant answer,
     #    no API call, never logged
     talk = small_talk_reply(message)
     if talk:
-        return reply(talk, "small_talk")
+        return respond(talk, "small_talk")
 
-    # 2) Retrieve the 3 closest careers
+    # 2) Understand the message in the context of the chat.
+    #    If a career is being discussed and the message does not name another
+    #    career, ask the AI whether the student is continuing the same topic
+    #    ("yes", "skill building", "what next"...) and turn it into a standalone question.
+    state = memory.get_state(request.conversation_id)
+    print(f"[memory] id={request.conversation_id} "
+          f"remembered_career={state['career'] if state else None}")
+
+    question = message
+    history_text = memory.format_history(state) if state else ""
+
+    if (state and state["career"]
+            and not mentions_known_career(message)
+            and len(message.split()) <= 40):
+        current = state["career"]
+        question, same_topic = rewrite_followup(history_text, message, current)
+
+        # Make sure a continued topic really carries the career name
+        if same_topic and current.lower() not in question.lower():
+            question = f"{question} (about {current})"
+
+        if not same_topic:
+            history_text = ""   # new topic: do not drag old context along
+        print(f"[memory] same_topic={same_topic}: {message!r} -> {question!r}")
+
+    # 3) Retrieve the 3 closest careers
     try:
-        results = search_careers(message, top_k=3)
+        results = search_careers(question, top_k=3)
     except Exception as exc:
         print(f"[rag] search failed: {type(exc).__name__}: {str(exc)[:120]}")
         return reply("Sorry, I couldn't search the career database right now. "
-                     "Please try again in a few seconds.", "error")
+                     "Please try again in a few seconds.", "error", cid=cid)
 
-    results, name_hit = promote_named_career(message, results)
+    results, name_hit = promote_named_career(question, results)
     top = results[0]
     others = ", ".join(r["career"] for r in results[1:3])
 
     print("[rag] top matches:",
           [(r["career"], round(r["similarity"], 3)) for r in results])
 
-    # 3a) Strong match (or career named): focused answer from the KB.
-    #     Only the matched career's text goes to the LLM, so it stays on topic.
+    # 4a) Strong match (or career named): focused answer from the KB.
     if name_hit or top["similarity"] >= STRONG_MATCH:
-        answer = generate_career_response(message, top["text"], others)
-        return reply(answer, "knowledge_base", results,
-                     career=top["career"], similarity=top["similarity"])
+        answer = generate_career_response(question, top["text"], others, history_text)
+        return respond(answer, "knowledge_base", results,
+                       career=top["career"], similarity=top["similarity"],
+                       remember_career=top["career"])
 
-    # 3b) Weak match: related career exists, say it's the closest one
+    # 4b) Weak match: related career exists, say it's the closest one
     if top["similarity"] >= WEAK_MATCH:
-        log_missing(message, results)
+        log_missing(question, results)
         answer = CLOSEST_NOTICE.format(career=top["career"]) + \
-            generate_career_response(message, top["text"], others)
-        return reply(answer, "knowledge_base_closest", results,
-                     career=top["career"], similarity=top["similarity"])
+            generate_career_response(question, top["text"], others, history_text)
+        return respond(answer, "knowledge_base_closest", results,
+                       career=top["career"], similarity=top["similarity"],
+                       remember_career=top["career"])
 
-    # 3c) No good match: is it even a career question?
-    kind = classify_question(message)
+    # 4c) No good match: is it even a career question?
+    kind = classify_question(question)
 
     if kind is None:
-        # AI unreachable: don't guess, don't log
+        # AI unreachable: don't guess, don't log, don't remember
         return reply("Sorry, I'm getting a lot of requests right now. "
-                     "Please try again in a few seconds.", "error")
+                     "Please try again in a few seconds.", "error", cid=cid)
 
     if kind == "other":
         # Not career related: friendly redirect, NOT logged as missing
-        return reply(OFF_TOPIC, "off_topic")
+        return respond(OFF_TOPIC, "off_topic")
 
     # Career question we don't have: general guidance + log it
-    log_missing(message, results)
+    log_missing(question, results)
     nearby = ", ".join(r["career"] for r in results)
-    answer = GENERAL_NOTICE + generate_general_response(message, nearby)
-    return reply(answer, "general", results, similarity=top["similarity"])
+    answer = GENERAL_NOTICE + generate_general_response(question, nearby)
+    return respond(answer, "general", results, similarity=top["similarity"])

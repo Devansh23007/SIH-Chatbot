@@ -29,8 +29,8 @@ export const chatbotConfig = {
 
   /** Small prompt bubble above the launcher on page load. Edit the copy here. */
   teaser: {
-    message: "Hello! I'm NCCT Career AI. 👋 Wondering where you stand? I can help you explore.",
-    questions: ['What is NCCT Career AI?', 'Based on my skills, where do I stand?'],
+    message: "Hello! I'm NCCT Career AI. 👋 Not sure which career to choose? Ask me about any career.",
+    questions: ['What can you do?', 'Courses and certifications for Data Engineer'],
     showAfterMs: 1500,
   },
 
